@@ -66,7 +66,7 @@ field_in_standard(poly, varK = 'tK, generator_K = 0) = {
   rpowers = [(rrel^(d-1-i)).pol| i<-[0..d-1]];
   rpowers_vec = List([]);
   foreach(rpowers,p,
-    v = Vec(p);    /* Estrai i coefficienti del polinomio */
+    v = Vec(p);    /* Extract the polynomial's coefficients */
     while (#v < d, v = concat(0,v));
     listput(rpowers_vec,v~);
   );
@@ -97,15 +97,15 @@ find_E(g,n) = {
   \\ output: [E,P], an elliptic curve E with a point P of order n
   my(vec,vec2,d,a,b,E,P,o, flag);
   d = g.f;
-  for(k = 0, 2^d - 1,   /* Ciclo for per avere tutti gli elementi di a F_{2^d} usando il binario*/
+  for(k = 0, 2^d - 1,   /* ``for cycle'' that yields all elements a in F_{2^d} (exploiting binary)*/
     vec = Vec(binary(k));  
     while(#vec < d, vec = concat(0, vec));  
     a = my_eval(Pol(vec),g);
-    for(k2 = 1, 2^d - 1,  \\ stessa cosa per b, ma diverso da uno
+    for(k2 = 1, 2^d - 1,  \\ same for b, just not 1
       vec2 = Vec(binary(k2));  
       while(#vec2 < d, vec2 = concat(0, vec2)); 
       b = my_eval(Pol(vec2),g);
-      \\ Ora la curva ellittica
+      \\ Now the elliptic curve
       E = ellinit([1+g-g, a+g-g ,0+g-g,0+g-g, b+g-g]);
       if(ellgroup(E)[1]%n == 0,
         flag = 1;
@@ -144,7 +144,7 @@ find_presentation(e) = {
   Ylocal = 'Ylocal;
   Psum = elladd(E,P,[(1+g-g)*Xlocal,(1+g-g)*Ylocal]);
   p1 = Xlocal^q*denominator(Psum[1])-numerator(Psum[1]);
-  p1 = subst(subst(p1,Xlocal,Xglobal),Ylocal,Yglobal); \\ vogliamo usare Xglobal e Yglobal, ma poi la priorita' sballerebbe la riga sopra
+  p1 = subst(subst(p1,Xlocal,Xglobal),Ylocal,Yglobal); \\ we would like to use Xglobal and Yglobal,  but GP's variables priority would create problems in the line above 
   p2 = Ylocal^q*denominator(Psum[2])-numerator(Psum[2]);
   p2 = subst(subst(p2,Xlocal,Xglobal),Ylocal,Yglobal);
   W = (1+g-g)*(Yglobal)^2+(E[1]*Xglobal+E[3]+g-g)*Yglobal - ((1+g-g)*Xglobal^3+E[2]*Xglobal^2+E[4]*Xglobal+E[5]);  
@@ -186,7 +186,7 @@ find_presentation_small(e) = {
   Psum = elladd(E,P,[(1+g-g)*Xlocal,(1+g-g)*Ylocal]);
   print("here Psum in find_presentation_small: ",Psum);
   p1 = Xlocal^q*denominator(Psum[1])-numerator(Psum[1]);
-  p1 = subst(subst(p1,Xlocal,Xglobal),Ylocal,Yglobal); \\ vogliamo usare Xglobal e Yglobal, ma poi la priorita' sballerebbe la riga sopra
+  p1 = subst(subst(p1,Xlocal,Xglobal),Ylocal,Yglobal); \\ we would like to use Xglobal and Yglobal,  but GP's variables priority would create problems in the line above 
   p2 = Ylocal^q*denominator(Psum[2])-numerator(Psum[2]);
   p2 = subst(subst(p2,Xlocal,Xglobal),Ylocal,Yglobal);
   W = (1+g-g)*(Yglobal)^2+(E[1]*Xglobal+E[3]+g-g)*Yglobal - ((1+g-g)*Xglobal^3+E[2]*Xglobal^2+E[4]*Xglobal+E[5]);  
@@ -257,7 +257,7 @@ divisor_to_point(D,E) = {
 
 
 divisor_sum(D1,D2) = {
-\\ Somma di due divisori D1 e D2
+\\ Sum of two divisors D1 and D2
   my(l1,D,next_row,flag_not_found);
   l1 = #D1[,1];
   D = matrix((#D1[,1])+(#D2[,1]),2, i,j, if (i <= l1, D1[i,j], 0));
@@ -313,7 +313,10 @@ lift_2_power(poly,F, max_iterations=10000) = {
     for(i=1,max_iterations,
       f = poly + F*(Xlocal^(2^n-poldegree(F))*random(g) + random(g)); \\ random(g)*Xlocal^(2^n-poldegree(F)-1)+random(g)*Xlocal^2+
       if(polisirreducible(f), 
-        if(verbose_for_example,print("lift_2_power: we have made the foloowing number of tries: "count));
+        if(verbose_for_example,
+          print("lift_2_power: we have made the foloowing number of tries: "count);
+          print((f - poly)/F)
+        );
         return(f));
       count++;
     );
@@ -347,7 +350,7 @@ all_ff(g) = {
   my(out,d,vec);
   out = List([]);
   d = g.f;
-  for(k = 0, 2^d - 1,   /* Ciclo for per avere tutti gli elementi di a F_{2^d} usando il binario*/
+  for(k = 0, 2^d - 1,   /* ``for cycle'' that yields all elements a in F_{2^d} (exploiting binary)*/
     vec = Vec(binary(k));  
     while(#vec < d, vec = concat(0, vec));  
     listput(out, my_eval(Pol(vec),g));
@@ -600,7 +603,7 @@ find_super_traps(E,P) = {
   Ylocal = 'Ylocal;
   Psum = elladd(E,P,[(1+g-g)*Xlocal,(1+g-g)*Ylocal]);
   p1 = Xlocal^q*denominator(Psum[1])-numerator(Psum[1]);
-  p1 = subst(subst(p1,Xlocal,Xglobal),Ylocal,Yglobal); \\ vogliamo usare Xglobal e Yglobal, ma poi la priorita' sballerebbe la riga sopra
+  p1 = subst(subst(p1,Xlocal,Xglobal),Ylocal,Yglobal); \\ we would like to use Xglobal and Yglobal,  but GP's variables priority would create problems in the line above 
   p2 = Ylocal^q*denominator(Psum[2])-numerator(Psum[2]);
   p2 = subst(subst(p2,Xlocal,Xglobal),Ylocal,Yglobal);
   W = (1+g-g)*(Yglobal)^2+(E[1]*Xglobal+E[3]+g-g)*Yglobal - ((1+g-g)*Xglobal^3+E[2]*Xglobal^2+E[4]*Xglobal+E[5]);  
@@ -1211,7 +1214,6 @@ descentThreeTwo(D,E,W,P_0,super_traps, max_iterations = 100000) = {
   ); 
   section_8_data = descentThreeTwo_section8(Q,q,Ek,P_0k, super_traps, max_iterations);
   \\  ???? super_traps depends on the embedding!!!!!!!
-  \\  SPERIAMO BENE!!!!!
   if(section_8_data==0, return(0));
   [point_found,a,b,c,d] = section_8_data; 
   [x_coord, y_coord] = point_found;
@@ -1437,7 +1439,7 @@ descentFourThree(D,E,W,P_0,super_traps, max_iterations = 1000000) = {
   Dk = [ffmap(q_embed_k, D[1]), change_coeff_W(q_embed_k, D[2])];
   \\  now we construct an irreducible factor D1 of D_k
   Fk_1 =  factor(Dk[1])[1,1];
-  \\ ?? forse bisogna essere sicuri che  Fk_1 abbia X come variabile principale 
+  \\ ?? we might check that the main variable of Fk_1  is X 
   [iso1, iso2] = field_in_standard(Fk_1);
   Gk1_mod_p = Pol(apply(iso1,Vec(Dk[2])),Yglobal);
   Gk1_mod_p = factor(Gk1_mod_p)[1,1];
@@ -1452,7 +1454,7 @@ descentFourThree(D,E,W,P_0,super_traps, max_iterations = 1000000) = {
     \\  return(D);
   ); 
   section_9_data = descentFourThree_section9(Q,q,Ek,P_0k, super_traps, max_iterations);
-  \\  ?? super_traps depends on the embedding!!!!!!! \\  SPERIAMO BENE!!!!!
+  \\  ?? super_traps depends on the embedding!!!!!!! \\  
   if(section_9_data==0, return(0));
   [P,Ptilde,alpha,beta,a,b,c,d] = section_9_data;
   if(verbose_for_example, print("descentFourThree here is P: "P ));
