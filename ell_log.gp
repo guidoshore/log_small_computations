@@ -1276,7 +1276,7 @@ test() = {
 descentFourThree_section9(Q,q,E,P_0, super_traps, max_iterations = 100000) = {
   \\  input: the elliptic curve E, and P_0 over a field k and Q defined over an extension of degree 4 of k, super_traps a list of points very bad (the ones such that phi_q(point) = point+P_0).
   \\  output: [P,Ptilde,alpha,beta,a,b,c,d]  as in section 9, which we can use to do the descent
-  my(k_card,gk, g_full,deg_full_over_q,q_embed_full,E_full,R,Q0,R0,Q1,R1,Q2,R2, q_embed_k,k_embed_full, deg_ktrap,g_ktrap, traps_embed_ktrap,traps_ktrap, k_embed_ktrap, E_k,x_answer,y_answer,P_full,f_PQ0,f_PQ1,f_PQ2,f_PR0,f_PR1,f_PR2,M,a,b,c,d,P_trap,Q0_trap,Q1_trap,Q2_trap,R0_trap,R1_trap,R2_trap,last_check,k_embed_full_inv,split_condition1,f_PQ0_ktrap,f_PQ1_ktrap,f_PQ2_ktrap,f_PR0_ktrap,f_PR1_ktrap,f_PR2_ktrap,Bcross,alpha,Ptilde_not_found,Ptilde,Ptilde_full, to_check, x_Ptilde,y_Ptilde );
+  my(k_card,gk, g_full,deg_full_over_q,q_embed_full,E_full,R,Q0,R0,Q1,R1,Q2,R2, q_embed_k,k_embed_full, deg_ktrap,g_ktrap, traps_embed_ktrap,traps_ktrap, k_embed_ktrap, E_k,x_answer,y_answer,P_full,f_PQ0,f_PQ1,f_PQ2,f_PR0,f_PR1,f_PR2,M,a,b,c,d,P_trap,Q0_trap,Q1_trap,Q2_trap,R0_trap,R1_trap,R2_trap,last_check,k_embed_full_inv,split_condition1,f_PQ0_ktrap,f_PQ1_ktrap,f_PQ2_ktrap,f_PR0_ktrap,f_PR1_ktrap,f_PR2_ktrap,Bcross,alpha,Ptilde_not_found,Ptilde,Ptilde_full, to_check, x_Ptilde,y_Ptilde, a_devious_point);
   \\?? at the moment we do not check if Q is a supertrap
   k_card = (E.j.p)^((vecsum(Q).f)/4);
   gk = ffgen(E.j); 
@@ -1315,10 +1315,15 @@ descentFourThree_section9(Q,q,E,P_0, super_traps, max_iterations = 100000) = {
       Ptilde = [x_Ptilde,y_Ptilde[1]];
       Ptilde_full = ffmap(k_embed_full,Ptilde);
       to_check = [Q1,Q2,Q3,Q0,R1,R2,R3,R0];
+      a_devious_point = elladd(E_full,ellneg(E_full,elladd(E_full,elladd(E_full,elladd(E_full,Q0,Q1),Q2),Q3)),R2); \\−Q0−Q1−Q2−Q3+R2
       Ptilde_not_found=0;
+      if(Ptilde_full== a_devious_point, Ptilde_not_found==1);
+      if(ellmul(E_full,Ptilde_full,2)== elladd(E_full,ellneg(E_full,elladd(E_full,elladd(E_full,elladd(E_full,elladd(E_full,Q0,Q1),Q2),Q3),R2)),R3), Ptilde_not_found==1);
       for(i=1,8,
         for(j=i+1,8,
           if(my_f(Ptilde_full,to_check[i]) == my_f(Ptilde_full,to_check[j]), Ptilde_not_found==1);
+          if(Ptilde_full== elladd(E_full,a_devious_point,to_check[j]) , Ptilde_not_found==1);
+          if(Ptilde_full== ellneg(E_full,to_check[j]) , Ptilde_not_found==1);
         );
       );
     );    
