@@ -60,7 +60,7 @@ field_in_standard(poly, varK = 'tK, generator_K = 0) = {
   qembed = ffembed(gq,gK); 
   poly_K =ffmap(qembed,poly); 
   r = polrootsmod(poly_K)[1]; \\ root of poly in K
-  iso1 = (P -> my_eval( ffmap(qembed, lift(P)) , r));  \\versione lunga  [variable(poly), r, qembed,(P -> my_eval( ffmap(qembed,P.pol) , r))];
+  iso1 = (P -> my_eval( ffmap(qembed, lift(P)) , r));  \\long version  [variable(poly), r, qembed,(P -> my_eval( ffmap(qembed,P.pol) , r))];
   \\ We have done iso1, now the inverse. We need to write gK as a polynomial in r with coefficients in F_q
   rrel = ffmaprel(ffinvmap(qembed),r);  
   rpowers = [(rrel^(d-1-i)).pol| i<-[0..d-1]];
@@ -79,7 +79,7 @@ field_in_standard(poly, varK = 'tK, generator_K = 0) = {
     gKimage = Mod(Pol(matsolve(M,vtarget~)~, variable(poly)), poly);
   );
   \\  print(my_eval(liftall(minpoly(gK)),gKimage)); \\ for debugging
-  iso2 = (P -> my_eval( (P+gK-gK).pol , gKimage)) ;  \\vecchia versione  iso2 = [gk, gKimage, (P -> my_eval( P.pol , gKimage)) ];
+  iso2 = (P -> my_eval( (P+gK-gK).pol , gKimage)) ;  \\old version  iso2 = [gk, gKimage, (P -> my_eval( P.pol , gKimage)) ];
   [iso1,iso2, gK];
 }
 
@@ -337,7 +337,7 @@ combconrip(L, d) = {
   \\ output: the vector of all elements in L^d
     my(n = #L);
     if (d == 1, 
-        vector(n, i, [L[i]]), /* Caso base */
+        vector(n, i, [L[i]]), \\ first case 
         concat(apply(i -> apply(x -> concat(L[i], x), combconrip(L, d - 1)),  [1..n])
         )
     );
@@ -540,7 +540,7 @@ find_traps_for_exemple(E,W,P) ={
   return(output);
   \\  (phi+1) (X,Y) = P_0
   a_point =  elladd(E,generic_pointq, generic_point);
-  p1 = vecprod(factor(denominator(a_point[1]))[,1]); \\ in the denonminator there are x of points such that 2phi-1 = 0. If we add P_0 to them we find all points such that 2phi-1 =P_0   
+  p1 = vecprod(factor(denominator(a_point[1]))[,1]); \\ in the denominator there are x of points such that 2phi-1 = 0. If we add P_0 to them we find all points such that 2phi-1 =P_0   
   p1 = make_global(p1)%W;
   poly = polresultant(W,p1);
   foreach(factor(poly)[,1], fact,
@@ -610,7 +610,7 @@ find_super_traps(E,P) = {
   \\ p1,p2,W describe the ideal of points such that phi(Q)=Q+P. We lower a bit the degree in X and Y and look for an ideal in the primary decomposition
   p1 = p1%W;
   p2 = p2%W;
-  if(variable(p1)!=Yglobal, return(0)); \\?? here we are supposeing that p1 is of the form Y*(element of F_q), but if the code works it is correct
+  if(variable(p1)!=Yglobal, return(0)); \\?? here we are supposing that p1 is of the form Y*(element of F_q), but if the code works it is correct
   p11 = polcoeff(p1,1);
   if(subst(p11,Xglobal,0)!=p11, return(0));
   p1 = p1/subst(p11,Xglobal,0);
